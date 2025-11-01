@@ -16,7 +16,7 @@ export interface MarkedUrl {
  * Extension settings
  */
 export interface Settings {
-  /** Query parameters to ignore when determining URL uniqueness */
+  /** Query parameters to ignore when determining URL uniqueness (user-added only) */
   ignoredQueryParams: string[]
 }
 

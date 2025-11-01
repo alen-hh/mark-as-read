@@ -6,13 +6,53 @@ const storage = new Storage()
 const STORAGE_KEY = "markedUrls"
 const SETTINGS_KEY = "settings"
 
+// Default UTM parameters to ignore
+const DEFAULT_IGNORED_PARAMS = [
+  "utm_source",
+  "utm_medium",
+  "utm_campaign",
+  "utm_term",
+  "utm_content",
+  "utm_id",
+  "utm_source_platform",
+  "utm_creative_format",
+  "utm_marketing_tactic"
+]
+
 /**
  * Get settings from storage
  * @returns Settings object
  */
 export async function getSettings(): Promise<Settings> {
   const settings = await storage.get<Settings>(SETTINGS_KEY)
-  return settings || { ignoredQueryParams: [] }
+  
+  // If no settings exist, initialize with empty user params (defaults are always applied)
+  if (!settings) {
+    const defaultSettings: Settings = {
+      ignoredQueryParams: []
+    }
+    await saveSettings(defaultSettings)
+    return defaultSettings
+  }
+  
+  return settings
+}
+
+/**
+ * Get all ignored query parameters (default + user-added)
+ * @returns Array of all ignored parameters
+ */
+export async function getAllIgnoredParams(): Promise<string[]> {
+  const settings = await getSettings()
+  return [...DEFAULT_IGNORED_PARAMS, ...settings.ignoredQueryParams]
+}
+
+/**
+ * Get only default ignored parameters
+ * @returns Array of default parameters
+ */
+export function getDefaultIgnoredParams(): string[] {
+  return [...DEFAULT_IGNORED_PARAMS]
 }
 
 /**
@@ -29,10 +69,17 @@ export async function saveSettings(settings: Settings): Promise<void> {
  */
 export async function addIgnoredQueryParam(param: string): Promise<void> {
   const settings = await getSettings()
-  if (!settings.ignoredQueryParams.includes(param)) {
-    settings.ignoredQueryParams.push(param)
-    await saveSettings(settings)
+  
+  // Don't add if it's already in user params or default params
+  if (
+    settings.ignoredQueryParams.includes(param) ||
+    DEFAULT_IGNORED_PARAMS.includes(param)
+  ) {
+    return
   }
+  
+  settings.ignoredQueryParams.push(param)
+  await saveSettings(settings)
 }
 
 /**
@@ -59,12 +106,12 @@ export async function normalizeUrl(url: string): Promise<string> {
     // Remove the hash/fragment
     urlObj.hash = ""
     
-    // Get ignored query params from settings
-    const settings = await getSettings()
+    // Get all ignored query params (default + user-added)
+    const allIgnoredParams = await getAllIgnoredParams()
     
     // Remove ignored query parameters
-    if (settings.ignoredQueryParams.length > 0) {
-      settings.ignoredQueryParams.forEach((param) => {
+    if (allIgnoredParams.length > 0) {
+      allIgnoredParams.forEach((param) => {
         urlObj.searchParams.delete(param)
       })
     }

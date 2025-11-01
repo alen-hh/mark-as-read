@@ -3,19 +3,21 @@ import { useEffect, useState } from "react"
 import Layout from "~components/Layout"
 import {
   addIgnoredQueryParam,
+  getDefaultIgnoredParams,
   getSettings,
   removeIgnoredQueryParam
 } from "~utils/storage"
 
 function Settings() {
-  const [ignoredParams, setIgnoredParams] = useState<string[]>([])
+  const [defaultParams] = useState<string[]>(getDefaultIgnoredParams())
+  const [userParams, setUserParams] = useState<string[]>([])
   const [newParam, setNewParam] = useState("")
   const [isLoading, setIsLoading] = useState(true)
 
   const loadSettings = async () => {
     setIsLoading(true)
     const settings = await getSettings()
-    setIgnoredParams(settings.ignoredQueryParams)
+    setUserParams(settings.ignoredQueryParams)
     setIsLoading(false)
   }
 
@@ -42,6 +44,8 @@ function Settings() {
       handleAddParam()
     }
   }
+
+  const totalParams = defaultParams.length + userParams.length
 
   return (
     <Layout currentPage="settings">
@@ -97,37 +101,60 @@ function Settings() {
             {/* List of Ignored Parameters */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Ignored Parameters ({ignoredParams.length})
+                Ignored Parameters ({totalParams})
               </label>
               {isLoading ? (
                 <div className="text-gray-600 text-sm">Loading...</div>
-              ) : ignoredParams.length === 0 ? (
-                <div className="text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-                  <p className="text-sm text-gray-600">
-                    No query parameters ignored yet
-                  </p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Add parameters above to start
-                  </p>
-                </div>
               ) : (
-                <div className="space-y-2">
-                  {ignoredParams.map((param) => (
-                    <div
-                      key={param}
-                      className="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-mono text-gray-900">
-                          {param}
-                        </span>
-                      </div>
-                      <button
-                        onClick={() => handleRemoveParam(param)}
-                        className="px-3 py-1 text-xs font-medium text-red-600 bg-white border border-red-600 rounded hover:bg-red-600 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
-                        Remove
-                      </button>
+                <div className="space-y-4">
+                  {/* Default Parameters Section */}
+                  <div>
+                    <div className="text-xs font-medium text-gray-600 mb-2 flex items-center gap-2">
+                      <span>🔒 System Default ({defaultParams.length})</span>
+                      <span className="text-gray-400">- Cannot be removed</span>
                     </div>
-                  ))}
+                    <div className="flex flex-wrap gap-2 rounded-lg border border-blue-200 bg-blue-50 p-4">
+                      {defaultParams.map((param) => (
+                        <div
+                          key={param}
+                          className="flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-sm font-mono text-blue-800">
+                          <span>{param}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* User Parameters Section */}
+                  <div>
+                    <div className="text-xs font-medium text-gray-600 mb-2">
+                      ➕ User Added ({userParams.length})
+                    </div>
+                    {userParams.length === 0 ? (
+                      <div className="text-center py-6 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+                        <p className="text-sm text-gray-600">
+                          No custom parameters added yet
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          Add your own parameters above
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="flex flex-wrap gap-2 rounded-lg border border-gray-200 bg-gray-50 p-4">
+                        {userParams.map((param) => (
+                          <div
+                            key={param}
+                            className="flex items-center gap-2 rounded-full bg-gray-200 px-3 py-1 text-sm font-mono text-gray-800">
+                            <span>{param}</span>
+                            <button
+                              onClick={() => handleRemoveParam(param)}
+                              className="flex h-4 w-4 items-center justify-center rounded-full bg-gray-400 text-white transition-colors hover:bg-red-500">
+                              <span className="mb-0.5">&times;</span>
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>

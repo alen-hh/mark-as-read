@@ -8,7 +8,7 @@ import {
   unmarkUrl
 } from "~utils/storage"
 
-function OptionsPage() {
+function MarkedUrls() {
   const [markedUrls, setMarkedUrls] = useState<MarkedUrl[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
@@ -124,5 +124,5 @@ function OptionsPage() {
   )
 }
 
-export default OptionsPage
+export default MarkedUrls
 

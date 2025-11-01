@@ -52,7 +52,8 @@ function IndexPopup() {
   }
 
   const handleOpenHistory = () => {
-    chrome.runtime.openOptionsPage()
+    const url = chrome.runtime.getURL("/tabs/marked-urls.html")
+    chrome.tabs.create({ url })
   }
 
   const handleOpenSettings = () => {

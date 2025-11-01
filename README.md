@@ -51,6 +51,14 @@ The extension intelligently matches URLs by:
 - **Ignoring fragments**: `example.com#section1` and `example.com#section2` are treated as the same URL
 - **Ignoring configured query params**: If you add `utm_source` to the ignore list, then `example.com?utm_source=google` and `example.com` are treated as the same URL
 
+**Default Ignored Parameters:**
+The extension comes pre-configured with **9 system default UTM tracking parameters** that cannot be removed:
+- `utm_source`, `utm_medium`, `utm_campaign`
+- `utm_term`, `utm_content`, `utm_id`
+- `utm_source_platform`, `utm_creative_format`, `utm_marketing_tactic`
+
+These parameters are always ignored and displayed separately in the Settings page. You can add your own custom parameters (like `ref`, `fbclid`, etc.) which can be removed at any time.
+
 ## Data Structure
 
 Marked URLs are stored with the following structure:
@@ -68,9 +76,9 @@ Marked URLs are stored with the following structure:
 
 - `popup.tsx` - Extension popup interface
 - `content.ts` - Content script for visual indicators
-- `options.tsx` - History page for managing marked URLs
-- `settings.tsx` - Settings page for extension configuration
-- `components/Layout.tsx` - Shared layout component for options pages
+- `tabs/marked-urls.tsx` - History page for managing marked URLs
+- `tabs/settings.tsx` - Settings page for extension configuration
+- `components/Layout.tsx` - Shared layout component for tab pages
 - `utils/storage.ts` - Storage utility functions
 - `types.ts` - TypeScript type definitions
 

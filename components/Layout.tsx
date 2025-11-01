@@ -12,7 +12,7 @@ function Layout({ children, currentPage }: LayoutProps) {
     {
       id: "marked-urls" as const,
       label: "📚 Marked URLs",
-      page: "options"
+      page: "tabs/marked-urls"
     },
     {
       id: "settings" as const,
@@ -32,12 +32,15 @@ function Layout({ children, currentPage }: LayoutProps) {
       <header className="bg-white border-b border-gray-200 shadow-sm">
         <div className="px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="text-2xl">📖</div>
+            <img
+              src={chrome.runtime.getURL("assets/icon.png")}
+              alt="Extension Icon"
+              className="h-8 w-8"
+            />
             <div>
               <h1 className="text-xl font-bold text-gray-900">
                 Mark as Read
               </h1>
-              <p className="text-xs text-gray-500">Extension Management</p>
             </div>
           </div>
         </div>
@@ -63,12 +66,6 @@ function Layout({ children, currentPage }: LayoutProps) {
             ))}
           </nav>
 
-          {/* Footer in Sidebar */}
-          <div className="absolute bottom-0 w-64 p-4 border-t border-gray-200">
-            <div className="text-xs text-gray-500 text-center">
-              <p className="mt-1">© 2025 Mark as Read</p>
-            </div>
-          </div>
         </aside>
 
         {/* Main Content Area */}

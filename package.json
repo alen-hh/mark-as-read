@@ -36,6 +36,16 @@
       "activeTab",
       "storage",
       "tabs"
+    ],
+    "web_accessible_resources": [
+      {
+        "resources": [
+          "assets/*.png"
+        ],
+        "matches": [
+          "<all_urls>"
+        ]
+      }
     ]
   }
 }

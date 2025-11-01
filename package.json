@@ -2,7 +2,7 @@
   "name": "mark-as-read",
   "displayName": "Mark as read",
   "version": "2.0.0",
-  "description": "A simple Chrome extension that helps you track which URLs you've already read. Mark pages as read, see visual indicators on marked pages, and manage your reading history.",
+  "description": "A simple Chrome extension that helps you track which URLs you've already read. Mark pages as read, see visual indicators on marked pages, and manage your reading history. Built with Plasmo framework and styled with Tailwind CSS.",
   "author": "Alen Hu <huhaoyue0220@126.com>",
   "scripts": {
     "dev": "plasmo dev",

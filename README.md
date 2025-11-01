@@ -6,14 +6,25 @@ A simple Chrome extension that helps you track which URLs you've already read. M
 
 ## Features
 
-- **Popup Interface**: Mark the current page as read/unread with a single click
-- **Visual Indicator**: Marked pages display a subtle "✅ Read" badge in the top-right corner
-- **History Page**: View and manage all marked URLs in a convenient table format
-- **Persistent Storage**: All data is stored locally using Chrome's storage API
-- **Modern UI**: Beautiful, responsive interface built with Tailwind CSS
+- **One-Click Marking**: Mark the current page as read or unread directly from the extension popup.
+- **Visual Indicator**: A subtle "✅ Read" badge is displayed on any page you've marked, so you instantly know you've seen it before.
+- **History Page**: A dedicated page to view, search, and manage all your marked URLs in a clean, table format.
+- **Settings Page**: Customize the extension's behavior by specifying URL query parameters to ignore.
 - **Smart URL Matching**: 
-  - Automatically ignores URL fragments (#)
-  - Configurable query parameter filtering (e.g., utm_source, ref)
+  - Automatically ignores URL fragments (`#`).
+  - Filters out common tracking parameters by default (e.g., `utm_source`).
+  - Allows you to add your own custom query parameters to ignore (e.g., `ref`, `fbclid`).
+- **Persistent Storage**: All data is stored locally and securely using Chrome's storage API.
+- **Modern UI**: A clean and responsive interface built with React and Tailwind CSS.
+
+## How It Works
+
+The extension uses a combination of a popup, content script, and option pages to deliver its functionality:
+
+1.  **Popup (`popup.tsx`)**: When you click the extension icon, the popup appears. It gets the current tab's URL and title, and checks against stored data to see if the page is already marked. You can then toggle the "read" status.
+2.  **Content Script (`content.ts`)**: This script runs on all pages (`<all_urls>`). It checks if the current page's URL is in your list of marked URLs. If it is, it injects a small "✅ Read" badge into the top-right corner of the page. It also listens for changes in storage, so the badge will appear or disappear in real-time if you mark/unmark a page.
+3.  **Storage (`utils/storage.ts`)**: All marked URLs and settings are stored in Chrome's local storage. Before checking a URL, it is "normalized" by removing the URL fragment (`#...`) and any ignored query parameters. This means `example.com?utm_source=google` and `example.com` are treated as the same page.
+4.  **Pages (`tabs/`)**: The "History" and "Settings" pages are built as separate HTML pages within the extension, allowing for a richer user experience.
 
 ## Tech Stack
 
@@ -21,7 +32,7 @@ A simple Chrome extension that helps you track which URLs you've already read. M
 - **UI Library**: React 18
 - **Styling**: Tailwind CSS 3
 - **Language**: TypeScript
-- **Storage**: Plasmo Storage API
+- **Storage**: Plasmo Storage API (`@plasmohq/storage`)
 
 ## Getting Started
 
@@ -35,29 +46,29 @@ npm run dev
 
 Open your browser and load the appropriate development build. For example, if you are developing for the chrome browser, using manifest v3, use: `build/chrome-mv3-dev`.
 
+You can start editing the popup by modifying `popup.tsx`. It should auto-recompile and reload the extension on changes.
+
 ## Usage
 
-1. **Mark a URL**: Click the extension icon and press "Mark as Read" button
-2. **Unmark a URL**: Click the extension icon on a marked page and press "Mark as Unread"
-3. **View History**: Right-click the extension icon and select "Options" to see all marked URLs
-4. **Configure Settings**: Navigate to the Settings page to:
-   - Add query parameters to ignore (e.g., utm_source, ref, fbclid)
-   - Customize URL matching behavior
-5. **Visual Indicator**: Marked pages automatically show a green "✅ Read" badge
+1.  **Mark a URL**: Click the extension icon on any page and press the "Mark as Read" button.
+2.  **Unmark a URL**: On a marked page, click the extension icon and press "Mark as Unread".
+3.  **View History**: Right-click the extension icon and select "Options", or navigate from the popup, to see all marked URLs.
+4.  **Configure Settings**: Navigate to the Settings page to add or remove query parameters that should be ignored when matching URLs.
+5.  **Visual Indicator**: Marked pages will automatically show a green "✅ Read" badge in the top-right corner.
 
 ### Smart URL Matching
 
 The extension intelligently matches URLs by:
-- **Ignoring fragments**: `example.com#section1` and `example.com#section2` are treated as the same URL
-- **Ignoring configured query params**: If you add `utm_source` to the ignore list, then `example.com?utm_source=google` and `example.com` are treated as the same URL
+- **Ignoring fragments**: `example.com/#section1` and `example.com/#section2` are treated as the same URL.
+- **Ignoring configured query params**: If `utm_source` is on the ignore list, then `example.com/?utm_source=google` and `example.com/` are treated as the same URL.
 
 **Default Ignored Parameters:**
-The extension comes pre-configured with **9 system default UTM tracking parameters** that cannot be removed:
+The extension comes pre-configured with a set of common tracking parameters that cannot be removed:
 - `utm_source`, `utm_medium`, `utm_campaign`
 - `utm_term`, `utm_content`, `utm_id`
 - `utm_source_platform`, `utm_creative_format`, `utm_marketing_tactic`
 
-These parameters are always ignored and displayed separately in the Settings page. You can add your own custom parameters (like `ref`, `fbclid`, etc.) which can be removed at any time.
+You can add your own custom parameters (like `ref`, `fbclid`, etc.) in the Settings page.
 
 ## Data Structure
 
@@ -65,26 +76,30 @@ Marked URLs are stored with the following structure:
 
 ```json
 {
-  "url": "https://www.example.com/abc.html",
-  "title": "An Example Page",
-  "domain": "example.com",
-  "marked_at": "1761978965"
+  "url": "https://www.example.com/some/path",
+  "title": "An Example Page Title",
+  "domain": "www.example.com",
+  "marked_at": "1672531200000"
 }
 ```
 
 ## Project Structure
 
-- `popup.tsx` - Extension popup interface
-- `content.ts` - Content script for visual indicators
-- `tabs/marked-urls.tsx` - History page for managing marked URLs
-- `tabs/settings.tsx` - Settings page for extension configuration
-- `components/Layout.tsx` - Shared layout component for tab pages
-- `utils/storage.ts` - Storage utility functions
-- `types.ts` - TypeScript type definitions
+- **`popup.tsx`**: The main popup interface.
+- **`content.ts`**: The content script responsible for injecting the "Read" badge on pages.
+- **`tabs/`**: Directory for standalone extension pages.
+  - **`marked-urls.tsx`**: The "History" page for viewing and managing all marked URLs.
+  - **`settings.tsx`**: The "Settings" page for configuring ignored query parameters.
+- **`components/`**: Shared React components.
+  - **`Layout.tsx`**: A shared layout component for the `tabs` pages, providing consistent navigation and header.
+- **`utils/`**: Utility functions.
+  - **`storage.ts`**: Handles all interactions with Chrome's storage, including getting/setting marked URLs and settings, and URL normalization logic.
+- **`types.ts`**: TypeScript type definitions for `MarkedUrl`, `Settings`, etc.
+- **`style.css`**: Global styles and Tailwind CSS imports.
 
 For further guidance, [visit our Documentation](https://docs.plasmo.com/)
 
-## Making production build
+## Making a Production Build
 
 Run the following:
 
@@ -94,8 +109,8 @@ pnpm build
 npm run build
 ```
 
-This should create a production bundle for your extension, ready to be zipped and published to the stores.
+This will create a production-ready bundle in the `build` directory, which can be zipped and published to the web stores.
 
-## Submit to the webstores
+## Submitting to Web Stores
 
 The easiest way to deploy your Plasmo extension is to use the built-in [bpp](https://bpp.browser.market) GitHub action. Prior to using this action however, make sure to build your extension and upload the first version to the store to establish the basic credentials. Then, simply follow [this setup instruction](https://docs.plasmo.com/framework/workflows/submit) and you should be on your way for automated submission!

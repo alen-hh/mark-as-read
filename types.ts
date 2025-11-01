@@ -12,3 +12,11 @@ export interface MarkedUrl {
   marked_at: string
 }
 
+/**
+ * Extension settings
+ */
+export interface Settings {
+  /** Query parameters to ignore when determining URL uniqueness */
+  ignoredQueryParams: string[]
+}
+

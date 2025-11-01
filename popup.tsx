@@ -4,7 +4,7 @@ import {
   extractDomain,
   isUrlMarked,
   markUrlAsRead,
-  normalizeUrl,
+  normalizeUrlSync,
   unmarkUrl
 } from "~utils/storage"
 
@@ -55,6 +55,11 @@ function IndexPopup() {
     chrome.runtime.openOptionsPage()
   }
 
+  const handleOpenSettings = () => {
+    const url = chrome.runtime.getURL("/tabs/settings.html")
+    chrome.tabs.create({ url })
+  }
+
   return (
     <div className="p-4 min-w-[300px] bg-white">
       <h3 className="text-lg font-semibold mt-0 mb-3 text-gray-800">
@@ -75,7 +80,7 @@ function IndexPopup() {
           <div className="mb-4">
             <div className="text-xs text-gray-600 mb-1">🔗 URL:</div>
             <div className="text-xs break-all text-blue-600">
-              {normalizeUrl(currentUrl)}
+              {normalizeUrlSync(currentUrl)}
             </div>
           </div>
 

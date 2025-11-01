@@ -1,19 +1,90 @@
 import { Storage } from "@plasmohq/storage"
-import type { MarkedUrl } from "~types"
+import type { MarkedUrl, Settings } from "~types"
 
 const storage = new Storage()
 
 const STORAGE_KEY = "markedUrls"
+const SETTINGS_KEY = "settings"
 
 /**
- * Normalize a URL by removing the fragment identifier (hash)
+ * Get settings from storage
+ * @returns Settings object
+ */
+export async function getSettings(): Promise<Settings> {
+  const settings = await storage.get<Settings>(SETTINGS_KEY)
+  return settings || { ignoredQueryParams: [] }
+}
+
+/**
+ * Save settings to storage
+ * @param settings - Settings object to save
+ */
+export async function saveSettings(settings: Settings): Promise<void> {
+  await storage.set(SETTINGS_KEY, settings)
+}
+
+/**
+ * Add a query parameter to ignore list
+ * @param param - Query parameter name to ignore
+ */
+export async function addIgnoredQueryParam(param: string): Promise<void> {
+  const settings = await getSettings()
+  if (!settings.ignoredQueryParams.includes(param)) {
+    settings.ignoredQueryParams.push(param)
+    await saveSettings(settings)
+  }
+}
+
+/**
+ * Remove a query parameter from ignore list
+ * @param param - Query parameter name to remove
+ */
+export async function removeIgnoredQueryParam(param: string): Promise<void> {
+  const settings = await getSettings()
+  settings.ignoredQueryParams = settings.ignoredQueryParams.filter(
+    (p) => p !== param
+  )
+  await saveSettings(settings)
+}
+
+/**
+ * Normalize a URL by removing the fragment identifier (hash) and ignored query params
+ * @param url - The URL to normalize
+ * @returns The normalized URL without fragment and ignored query params
+ */
+export async function normalizeUrl(url: string): Promise<string> {
+  try {
+    const urlObj = new URL(url)
+    
+    // Remove the hash/fragment
+    urlObj.hash = ""
+    
+    // Get ignored query params from settings
+    const settings = await getSettings()
+    
+    // Remove ignored query parameters
+    if (settings.ignoredQueryParams.length > 0) {
+      settings.ignoredQueryParams.forEach((param) => {
+        urlObj.searchParams.delete(param)
+      })
+    }
+    
+    return urlObj.href
+  } catch (error) {
+    console.error("Failed to normalize URL:", url, error)
+    return url
+  }
+}
+
+/**
+ * Synchronous version of normalizeUrl for display purposes
+ * Note: Does not apply query param filtering, only removes hash
  * @param url - The URL to normalize
  * @returns The normalized URL without fragment
  */
-export function normalizeUrl(url: string): string {
+export function normalizeUrlSync(url: string): string {
   try {
     const urlObj = new URL(url)
-    // Remove the hash/fragment
     urlObj.hash = ""
     return urlObj.href
   } catch (error) {
@@ -37,7 +108,7 @@ export async function getAllMarkedUrls(): Promise<MarkedUrl[]> {
  * @returns True if the URL is marked, false otherwise
  */
 export async function isUrlMarked(url: string): Promise<boolean> {
-  const normalizedUrl = normalizeUrl(url)
+  const normalizedUrl = await normalizeUrl(url)
   const markedUrls = await getAllMarkedUrls()
   return markedUrls.some((item) => item.url === normalizedUrl)
 }
@@ -53,7 +124,7 @@ export async function markUrlAsRead(
   title: string,
   domain: string
 ): Promise<void> {
-  const normalizedUrl = normalizeUrl(url)
+  const normalizedUrl = await normalizeUrl(url)
   const markedUrls = await getAllMarkedUrls()
 
   // Check if URL is already marked (using normalized URL)
@@ -78,7 +149,7 @@ export async function markUrlAsRead(
  * @param url - The URL to remove
  */
 export async function unmarkUrl(url: string): Promise<void> {
-  const normalizedUrl = normalizeUrl(url)
+  const normalizedUrl = await normalizeUrl(url)
   const markedUrls = await getAllMarkedUrls()
   const filteredUrls = markedUrls.filter((item) => item.url !== normalizedUrl)
   await storage.set(STORAGE_KEY, filteredUrls)

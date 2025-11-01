@@ -11,6 +11,9 @@ A simple Chrome extension that helps you track which URLs you've already read. M
 - **History Page**: View and manage all marked URLs in a convenient table format
 - **Persistent Storage**: All data is stored locally using Chrome's storage API
 - **Modern UI**: Beautiful, responsive interface built with Tailwind CSS
+- **Smart URL Matching**: 
+  - Automatically ignores URL fragments (#)
+  - Configurable query parameter filtering (e.g., utm_source, ref)
 
 ## Tech Stack
 
@@ -37,7 +40,16 @@ Open your browser and load the appropriate development build. For example, if yo
 1. **Mark a URL**: Click the extension icon and press "Mark as Read" button
 2. **Unmark a URL**: Click the extension icon on a marked page and press "Mark as Unread"
 3. **View History**: Right-click the extension icon and select "Options" to see all marked URLs
-4. **Visual Indicator**: Marked pages automatically show a green "✓ Read" badge
+4. **Configure Settings**: Navigate to the Settings page to:
+   - Add query parameters to ignore (e.g., utm_source, ref, fbclid)
+   - Customize URL matching behavior
+5. **Visual Indicator**: Marked pages automatically show a green "✅ Read" badge
+
+### Smart URL Matching
+
+The extension intelligently matches URLs by:
+- **Ignoring fragments**: `example.com#section1` and `example.com#section2` are treated as the same URL
+- **Ignoring configured query params**: If you add `utm_source` to the ignore list, then `example.com?utm_source=google` and `example.com` are treated as the same URL
 
 ## Data Structure
 
@@ -57,6 +69,8 @@ Marked URLs are stored with the following structure:
 - `popup.tsx` - Extension popup interface
 - `content.ts` - Content script for visual indicators
 - `options.tsx` - History page for managing marked URLs
+- `settings.tsx` - Settings page for extension configuration
+- `components/Layout.tsx` - Shared layout component for options pages
 - `utils/storage.ts` - Storage utility functions
 - `types.ts` - TypeScript type definitions
 

@@ -161,27 +161,6 @@ function Settings() {
           </div>
         </div>
 
-        {/* Info Section */}
-        <div className="bg-blue-50 rounded-lg border border-blue-200 p-6">
-          <div className="flex items-start gap-3">
-            <div className="text-2xl">ℹ️</div>
-            <div>
-              <h4 className="text-sm font-semibold text-blue-900 mb-1">
-                About This Extension
-              </h4>
-              <p className="text-sm text-blue-800">
-                Mark as Read helps you track which URLs you've already visited.
-                All data is stored locally in your browser for privacy.
-              </p>
-              <div className="mt-3 text-xs text-blue-700">
-                <div>Version: 2.0.0</div>
-                <div className="mt-1">
-                  Built with Plasmo Framework & Tailwind CSS
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </Layout>
   )

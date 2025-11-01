@@ -77,7 +77,7 @@ function MarkedUrls() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                       🕐 Marked At
                     </th>
-                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider w-32">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-40">
                       ⚙️ Action
                     </th>
                   </tr>
@@ -87,7 +87,7 @@ function MarkedUrls() {
                     <tr
                       key={item.url}
                       className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 align-top">
                         <a
                           href={item.url}
                           target="_blank"
@@ -99,17 +99,18 @@ function MarkedUrls() {
                           {item.url}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-gray-600 text-sm">
+                      <td className="px-6 py-4 text-gray-600 text-sm align-top">
                         {item.domain}
                       </td>
-                      <td className="px-6 py-4 text-gray-600 text-sm whitespace-nowrap">
+                      <td className="px-6 py-4 text-gray-600 text-sm whitespace-nowrap align-top">
                         {formatDate(item.marked_at)}
                       </td>
-                      <td className="px-6 py-4 text-center">
+                      <td className="px-6 py-4 align-top">
                         <button
                           onClick={() => handleRemove(item.url, item.title)}
-                          className="px-3 py-1.5 text-xs font-medium text-red-600 bg-white border border-red-600 rounded hover:bg-red-600 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
-                          🗑️ Remove
+                          className="flex items-center justify-center gap-1 px-2 py-1.5 text-xs font-medium text-red-600 bg-white border border-red-600 rounded hover:bg-red-600 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                          aria-label={`Remove ${item.title}`}>
+                          <span role="img" aria-label="Remove">🗑️ Remove</span>
                         </button>
                       </td>
                     </tr>

@@ -8,6 +8,8 @@ import {
   unmarkUrl
 } from "~utils/storage"
 
+import "~style.css"
+
 function IndexPopup() {
   const [currentUrl, setCurrentUrl] = useState<string>("")
   const [currentTitle, setCurrentTitle] = useState<string>("")
@@ -54,42 +56,25 @@ function IndexPopup() {
   }
 
   return (
-    <div
-      style={{
-        padding: 16,
-        minWidth: 300,
-        fontFamily: "system-ui, -apple-system, sans-serif"
-      }}>
-      <h3 style={{ marginTop: 0, marginBottom: 12 }}>📖 Mark as Read</h3>
+    <div className="p-4 min-w-[300px] bg-white">
+      <h3 className="text-lg font-semibold mt-0 mb-3 text-gray-800">
+        📖 Mark as Read
+      </h3>
 
       {isLoading ? (
-        <div>Loading...</div>
+        <div className="text-gray-600">Loading...</div>
       ) : (
         <>
-          <div style={{ marginBottom: 12 }}>
-            <div style={{ fontSize: 12, color: "#666", marginBottom: 4 }}>
-              📄 Title:
-            </div>
-            <div
-              style={{
-                fontSize: 14,
-                fontWeight: 500,
-                wordBreak: "break-word"
-              }}>
+          <div className="mb-3">
+            <div className="text-xs text-gray-600 mb-1">📄 Title:</div>
+            <div className="text-sm font-medium break-words text-gray-900">
               {currentTitle}
             </div>
           </div>
 
-          <div style={{ marginBottom: 16 }}>
-            <div style={{ fontSize: 12, color: "#666", marginBottom: 4 }}>
-              🔗 URL:
-            </div>
-            <div
-              style={{
-                fontSize: 12,
-                wordBreak: "break-all",
-                color: "#0066cc"
-              }}>
+          <div className="mb-4">
+            <div className="text-xs text-gray-600 mb-1">🔗 URL:</div>
+            <div className="text-xs break-all text-blue-600">
               {normalizeUrl(currentUrl)}
             </div>
           </div>
@@ -97,39 +82,23 @@ function IndexPopup() {
           <button
             onClick={handleToggle}
             disabled={isLoading}
-            style={{
-              width: "100%",
-              padding: "10px 16px",
-              fontSize: 14,
-              fontWeight: 500,
-              border: "none",
-              borderRadius: 4,
-              cursor: isLoading ? "not-allowed" : "pointer",
-              backgroundColor: isMarked ? "#dc3545" : "#28a745",
-              color: "white",
-              opacity: isLoading ? 0.6 : 1
-            }}>
+            className={`w-full px-4 py-2.5 text-sm font-medium rounded transition-all
+              ${
+                isMarked
+                  ? "bg-red-600 hover:bg-red-700"
+                  : "bg-green-600 hover:bg-green-700"
+              }
+              text-white disabled:opacity-60 disabled:cursor-not-allowed
+              focus:outline-none focus:ring-2 focus:ring-offset-2
+              ${isMarked ? "focus:ring-red-500" : "focus:ring-green-500"}
+            `}>
             {isMarked ? "❌ Mark as Unread" : "✅ Mark as Read"}
           </button>
 
-          <div
-            style={{
-              marginTop: 16,
-              paddingTop: 16,
-              borderTop: "1px solid #eee",
-              textAlign: "center"
-            }}>
+          <div className="mt-4 pt-4 border-t border-gray-200 text-center">
             <button
               onClick={handleOpenHistory}
-              style={{
-                background: "none",
-                border: "none",
-                color: "#0066cc",
-                cursor: "pointer",
-                fontSize: 14,
-                textDecoration: "underline",
-                padding: 0
-              }}>
+              className="text-sm text-blue-600 hover:text-blue-800 underline focus:outline-none">
               📚 View All Marked URLs
             </button>
           </div>

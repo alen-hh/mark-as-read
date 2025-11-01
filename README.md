@@ -2,14 +2,23 @@ This is a [Plasmo extension](https://docs.plasmo.com/) project bootstrapped with
 
 ## Mark as Read Chrome Extension
 
-A simple Chrome extension that helps you track which URLs you've already read. Mark pages as read, see visual indicators on marked pages, and manage your reading history.
+A simple Chrome extension that helps you track which URLs you've already read. Mark pages as read, see visual indicators on marked pages, and manage your reading history. Built with Plasmo framework and styled with Tailwind CSS.
 
 ## Features
 
 - **Popup Interface**: Mark the current page as read/unread with a single click
-- **Visual Indicator**: Marked pages display a subtle "✓ Read" badge in the top-right corner
+- **Visual Indicator**: Marked pages display a subtle "✅ Read" badge in the top-right corner
 - **History Page**: View and manage all marked URLs in a convenient table format
 - **Persistent Storage**: All data is stored locally using Chrome's storage API
+- **Modern UI**: Beautiful, responsive interface built with Tailwind CSS
+
+## Tech Stack
+
+- **Framework**: [Plasmo](https://docs.plasmo.com/)
+- **UI Library**: React 18
+- **Styling**: Tailwind CSS 3
+- **Language**: TypeScript
+- **Storage**: Plasmo Storage API
 
 ## Getting Started
 

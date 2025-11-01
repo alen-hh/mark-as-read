@@ -2,11 +2,19 @@ import type { PlasmoCSConfig } from "plasmo"
 
 import { Storage } from "@plasmohq/storage"
 
+import cssText from "data-text:~style.css"
+
 import { isUrlMarked } from "~utils/storage"
 
 export const config: PlasmoCSConfig = {
   matches: ["<all_urls>"],
   all_frames: false
+}
+
+export const getStyle = () => {
+  const style = document.createElement("style")
+  style.textContent = cssText
+  return style
 }
 
 const storage = new Storage()
@@ -24,23 +32,12 @@ function createIndicator() {
 
   indicator = document.createElement("div")
   indicator.id = "mark-as-read-indicator"
-  indicator.textContent = "✅ Read"
-  indicator.style.cssText = `
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    background: rgba(40, 167, 69, 0.9);
-    color: white;
-    padding: 8px 16px;
-    border-radius: 4px;
-    font-family: system-ui, -apple-system, sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    z-index: 999999;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    display: flex;
-    align-items: center;
-    gap: 6px;
+  indicator.className = "fixed top-2.5 right-2.5 z-[999999]"
+  indicator.innerHTML = `
+    <div class="flex items-center gap-2 bg-green-600/90 text-white px-4 py-2 rounded shadow-lg">
+      <span>✅</span>
+      <span class="text-sm font-medium">Read</span>
+    </div>
   `
 
   document.body.appendChild(indicator)

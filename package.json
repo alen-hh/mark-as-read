@@ -1,8 +1,8 @@
 {
   "name": "mark-as-read",
   "displayName": "Mark as read",
-  "version": "0.0.1",
-  "description": "Mark your read URLs.",
+  "version": "2.0.0",
+  "description": "A simple Chrome extension that helps you track which URLs you've already read. Mark pages as read, see visual indicators on marked pages, and manage your reading history.",
   "author": "Alen Hu <huhaoyue0220@126.com>",
   "scripts": {
     "dev": "plasmo dev",
@@ -10,6 +10,7 @@
     "package": "plasmo package"
   },
   "dependencies": {
+    "@plasmohq/storage": "^1.15.0",
     "plasmo": "0.90.5",
     "react": "18.2.0",
     "react-dom": "18.2.0"
@@ -25,7 +26,13 @@
   },
   "manifest": {
     "host_permissions": [
-      "https://*/*"
+      "https://*/*",
+      "http://*/*"
+    ],
+    "permissions": [
+      "activeTab",
+      "storage",
+      "tabs"
     ]
   }
 }

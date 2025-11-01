@@ -1,5 +1,16 @@
 This is a [Plasmo extension](https://docs.plasmo.com/) project bootstrapped with [`plasmo init`](https://www.npmjs.com/package/plasmo).
 
+## Mark as Read Chrome Extension
+
+A simple Chrome extension that helps you track which URLs you've already read. Mark pages as read, see visual indicators on marked pages, and manage your reading history.
+
+## Features
+
+- **Popup Interface**: Mark the current page as read/unread with a single click
+- **Visual Indicator**: Marked pages display a subtle "✓ Read" badge in the top-right corner
+- **History Page**: View and manage all marked URLs in a convenient table format
+- **Persistent Storage**: All data is stored locally using Chrome's storage API
+
 ## Getting Started
 
 First, run the development server:
@@ -12,7 +23,33 @@ npm run dev
 
 Open your browser and load the appropriate development build. For example, if you are developing for the chrome browser, using manifest v3, use: `build/chrome-mv3-dev`.
 
-You can start editing the popup by modifying `popup.tsx`. It should auto-update as you make changes. To add an options page, simply add a `options.tsx` file to the root of the project, with a react component default exported. Likewise to add a content page, add a `content.ts` file to the root of the project, importing some module and do some logic, then reload the extension on your browser.
+## Usage
+
+1. **Mark a URL**: Click the extension icon and press "Mark as Read" button
+2. **Unmark a URL**: Click the extension icon on a marked page and press "Mark as Unread"
+3. **View History**: Right-click the extension icon and select "Options" to see all marked URLs
+4. **Visual Indicator**: Marked pages automatically show a green "✓ Read" badge
+
+## Data Structure
+
+Marked URLs are stored with the following structure:
+
+```json
+{
+  "url": "https://www.example.com/abc.html",
+  "title": "An Example Page",
+  "domain": "example.com",
+  "marked_at": "1761978965"
+}
+```
+
+## Project Structure
+
+- `popup.tsx` - Extension popup interface
+- `content.ts` - Content script for visual indicators
+- `options.tsx` - History page for managing marked URLs
+- `utils/storage.ts` - Storage utility functions
+- `types.ts` - TypeScript type definitions
 
 For further guidance, [visit our Documentation](https://docs.plasmo.com/)
 

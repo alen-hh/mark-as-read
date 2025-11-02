@@ -15,6 +15,7 @@ function IndexPopup() {
   const [currentTitle, setCurrentTitle] = useState<string>("")
   const [isMarked, setIsMarked] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [shortcutInfo, setShortcutInfo] = useState<string>("Shortcut")
 
   useEffect(() => {
     // Get current tab information
@@ -32,6 +33,23 @@ function IndexPopup() {
     })
   }, [])
 
+  // Listen for shortcut command from background script
+  useEffect(() => {
+    const handleMessage = async (
+      request: { action: string },
+      _sender: chrome.runtime.MessageSender,
+      sendResponse: (response?: any) => void
+    ) => {
+      if (request.action === "toggleMarkCommand") {
+        await handleToggle()
+        sendResponse({ success: true })
+      }
+    }
+
+    chrome.runtime.onMessage.addListener(handleMessage)
+    return () => chrome.runtime.onMessage.removeListener(handleMessage)
+  }, [isMarked, currentUrl])
+
   const handleToggle = async () => {
     if (!currentUrl) return
 
@@ -40,10 +58,36 @@ function IndexPopup() {
       if (isMarked) {
         await unmarkUrl(currentUrl)
         setIsMarked(false)
+        // Notify content script to show notification on page
+        try {
+          await chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            if (tabs[0]?.id) {
+              chrome.tabs.sendMessage(tabs[0].id, {
+                action: "toggleMarkFromPopup",
+                marked: true
+              })
+            }
+          })
+        } catch (err) {
+          console.log("Content script notification failed:", err)
+        }
       } else {
         const domain = extractDomain(currentUrl)
         await markUrlAsRead(currentUrl, currentTitle, domain)
         setIsMarked(true)
+        // Notify content script to show notification on page
+        try {
+          await chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            if (tabs[0]?.id) {
+              chrome.tabs.sendMessage(tabs[0].id, {
+                action: "toggleMarkFromPopup",
+                marked: false
+              })
+            }
+          })
+        } catch (err) {
+          console.log("Content script notification failed:", err)
+        }
       }
     } catch (error) {
       console.error("Error toggling mark status:", error)
@@ -59,6 +103,10 @@ function IndexPopup() {
   const handleOpenSettings = () => {
     const url = chrome.runtime.getURL("/tabs/settings.html")
     chrome.tabs.create({ url })
+  }
+
+  const handleOpenShortcutsPage = () => {
+    chrome.tabs.create({ url: "chrome://extensions/shortcuts" })
   }
 
   return (
@@ -101,13 +149,22 @@ function IndexPopup() {
             {isMarked ? "❌ Mark as Unread" : "✅ Mark as Read"}
           </button>
 
-          <div className="mt-4 pt-4 border-t border-gray-200 text-center">
+          <div className="mt-2 pt-2 border-t border-gray-200">
             <button
               onClick={handleOpenHistory}
-              className="text-sm text-blue-600 hover:text-blue-800 underline focus:outline-none">
+              className="w-full text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-3 py-2 rounded transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
               📚 View All Marked URLs
             </button>
           </div>
+          
+          <div className="mt-4 pt-4 border-t border-gray-200">
+            <button
+              onClick={handleOpenShortcutsPage}
+              className="w-full text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-3 py-2 rounded transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+              ⌨️ {shortcutInfo}
+            </button>
+          </div>
+
         </>
       )}
     </div>

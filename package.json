@@ -35,7 +35,8 @@
     "permissions": [
       "activeTab",
       "storage",
-      "tabs"
+      "tabs",
+      "commands"
     ],
     "web_accessible_resources": [
       {
@@ -46,6 +47,15 @@
           "<all_urls>"
         ]
       }
-    ]
+    ],
+    "commands": {
+      "toggle-mark-as-read": {
+        "suggested_key": {
+          "default": "Ctrl+Shift+M",
+          "mac": "Command+Shift+M"
+        },
+        "description": "Toggle mark current page as read or unread"
+      }
+    }
   }
 }

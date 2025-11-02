@@ -7,7 +7,10 @@ Track and mark pages as "read" in Chrome. Instantly see which URLs you've visite
 ## Features
 
 - **One-Click Marking**: Mark the current page as read or unread directly from the extension popup.
-- **Visual Indicator**: A subtle "✅ Read" badge is displayed on any page you've marked, so you instantly know you've seen it before.
+- **Keyboard Shortcuts**: Quickly toggle the mark status using a customizable keyboard shortcut.
+- **Visual Indicators**: 
+  - A subtle "✅ Read" badge displayed on marked pages in the top-right corner.
+  - Temporary notification showing "Marked!" or "Unmarked!" when you toggle the status.
 - **History Page**: A dedicated page to view, search, and manage all your marked URLs in a clean, table format.
 - **Settings Page**: Customize the extension's behavior by specifying URL query parameters to ignore.
 - **Smart URL Matching**: 
@@ -19,12 +22,13 @@ Track and mark pages as "read" in Chrome. Instantly see which URLs you've visite
 
 ## How It Works
 
-The extension uses a combination of a popup, content script, and option pages to deliver its functionality:
+The extension uses a combination of a popup, content script, background service worker, and option pages to deliver its functionality:
 
-1.  **Popup (`popup.tsx`)**: When you click the extension icon, the popup appears. It gets the current tab's URL and title, and checks against stored data to see if the page is already marked. You can then toggle the "read" status.
-2.  **Content Script (`content.ts`)**: This script runs on all pages (`<all_urls>`). It checks if the current page's URL is in your list of marked URLs. If it is, it injects a small "✅ Read" badge into the top-right corner of the page. It also listens for changes in storage, so the badge will appear or disappear in real-time if you mark/unmark a page.
-3.  **Storage (`utils/storage.ts`)**: All marked URLs and settings are stored in Chrome's local storage. Before checking a URL, it is "normalized" by removing the URL fragment (`#...`) and any ignored query parameters. This means `example.com?utm_source=google` and `example.com` are treated as the same page.
-4.  **Pages (`tabs/`)**: The "History" and "Settings" pages are built as separate HTML pages within the extension, allowing for a richer user experience.
+1.  **Popup (`popup.tsx`)**: When you click the extension icon, the popup appears. It displays the current tab's URL and title, and checks against stored data to see if the page is already marked. You can toggle the "read" status with a button click. The popup also provides a button to configure keyboard shortcuts.
+2.  **Content Script (`content.ts`)**: This script runs on all pages (`<all_urls>`). It checks if the current page's URL is in your list of marked URLs. If it is, it injects a small "✅ Read" badge into the top-right corner of the page. It also listens for changes in storage and keyboard shortcut commands, displaying notifications when you mark/unmark pages. The badge appears or disappears in real-time if you mark/unmark a page.
+3.  **Background Service Worker (`background.ts`)**: This listens for keyboard shortcut commands and communicates with the content script to execute the toggle action. It works seamlessly even when the popup isn't open.
+4.  **Storage (`utils/storage.ts`)**: All marked URLs and settings are stored in Chrome's local storage. Before checking a URL, it is "normalized" by removing the URL fragment (`#...`) and any ignored query parameters. This means `example.com?utm_source=google` and `example.com` are treated as the same page.
+5.  **Pages (`tabs/`)**: The "History" and "Settings" pages are built as separate HTML pages within the extension, allowing for a richer user experience.
 
 ## Tech Stack
 
@@ -52,9 +56,13 @@ You can start editing the popup by modifying `popup.tsx`. It should auto-recompi
 
 1.  **Mark a URL**: Click the extension icon on any page and press the "Mark as Read" button.
 2.  **Unmark a URL**: On a marked page, click the extension icon and press "Mark as Unread".
-3.  **View History**: Right-click the extension icon and select "Options", or navigate from the popup, to see all marked URLs.
-4.  **Configure Settings**: Navigate to the Settings page to add or remove query parameters that should be ignored when matching URLs.
-5.  **Visual Indicator**: Marked pages will automatically show a green "✅ Read" badge in the top-right corner.
+3.  **Quick Toggle with Keyboard**: Use shortcut to instantly toggle the current page's status without opening the popup.
+4.  **Configure Keyboard Shortcut**: Click the "⌨️ Shortcut" button in the popup to customize your keyboard shortcut. You'll be taken to `chrome://extensions/shortcuts` where you can set any key combination you prefer.
+5.  **View History**: Right-click the extension icon and select "Options", or navigate from the popup, to see all marked URLs.
+6.  **Configure Settings**: Navigate to the Settings page to add or remove query parameters that should be ignored when matching URLs.
+7.  **Visual Feedback**: 
+   - Marked pages display a green "✅ Read" badge in the top-right corner.
+   - When you toggle the mark status, a temporary notification appears showing "Marked!" or "Unmarked!".
 
 ### Smart URL Matching
 
@@ -85,8 +93,9 @@ Marked URLs are stored with the following structure:
 
 ## Project Structure
 
-- **`popup.tsx`**: The main popup interface.
-- **`content.ts`**: The content script responsible for injecting the "Read" badge on pages.
+- **`popup.tsx`**: The main popup interface with mark/unread button and shortcut configuration.
+- **`background.ts`**: The background service worker for handling keyboard shortcut commands.
+- **`content.ts`**: The content script responsible for injecting the "Read" badge and handling notifications on pages.
 - **`tabs/`**: Directory for standalone extension pages.
   - **`marked-urls.tsx`**: The "History" page for viewing and managing all marked URLs.
   - **`settings.tsx`**: The "Settings" page for configuring ignored query parameters.

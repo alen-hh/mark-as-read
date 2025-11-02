@@ -39,8 +39,8 @@ function createIndicator() {
   indicator.id = "mark-as-read-indicator"
   indicator.style.cssText = `
     position: fixed;
-    top: 10px;
-    right: 10px;
+    bottom: 16px;
+    left: 16px;
     z-index: 999999;
     display: flex;
     align-items: center;

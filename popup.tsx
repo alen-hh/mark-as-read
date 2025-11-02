@@ -15,7 +15,6 @@ function IndexPopup() {
   const [currentTitle, setCurrentTitle] = useState<string>("")
   const [isMarked, setIsMarked] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [shortcutInfo, setShortcutInfo] = useState<string>("Shortcut")
 
   useEffect(() => {
     // Get current tab information
@@ -149,19 +148,16 @@ function IndexPopup() {
             {isMarked ? "❌ Mark as Unread" : "✅ Mark as Read"}
           </button>
 
-          <div className="mt-2 pt-2 border-t border-gray-200">
+          <div className="mt-4 pt-4 border-t border-gray-200 flex gap-2">
             <button
               onClick={handleOpenHistory}
-              className="w-full text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-3 py-2 rounded transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-              📚 View All Marked URLs
+              className="flex-1 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-3 py-2 rounded transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+              📚 Marked URLs
             </button>
-          </div>
-          
-          <div className="mt-4 pt-4 border-t border-gray-200">
             <button
               onClick={handleOpenShortcutsPage}
-              className="w-full text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-3 py-2 rounded transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-              ⌨️ {shortcutInfo}
+              className="flex-1 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-3 py-2 rounded transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+              ⌨️ Shortcut
             </button>
           </div>
 
